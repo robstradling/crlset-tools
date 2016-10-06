@@ -328,7 +328,7 @@ func dump(filename string, certificateFilename string, dumpSPKIs bool) bool {
 			}
 
 			if len(spki) == 0 {
-				fmt.Printf("\\\\x%x\t\\\\x%x\n", current_spki, c[:serialLen])
+				fmt.Printf("\\\\x%x\t\\\\x%x\t\n", current_spki, c[:serialLen])
 			} else if spkiMatches {
 				fmt.Printf("%x\n", c[:serialLen])
 			}
@@ -343,7 +343,7 @@ func dump(filename string, certificateFilename string, dumpSPKIs bool) bool {
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "CRLSet has an invalid blocked SPKI")
 			}
-			fmt.Printf("%s\n", hex.EncodeToString(spkiBytes))
+			fmt.Printf("\t\t\\\\x%s\n", hex.EncodeToString(spkiBytes))
 		}
 	}
 
