@@ -290,13 +290,8 @@ func dump(filename string, certificateFilename string) bool {
 		return false
 	}
 
-	if len(spki) == 0 {
-		fmt.Printf("Sequence: %d\n", header.Sequence)
-		fmt.Printf("Parents: %d\n", header.NumParents)
-		fmt.Printf("\n")
-	}
-
 	const spkiHashLen = 32
+	var current_spki []byte
 
 	for len(c) > 0 {
 		if len(c) < spkiHashLen {
@@ -305,7 +300,7 @@ func dump(filename string, certificateFilename string) bool {
 		}
 		spkiMatches := bytes.Equal(spki, c[:spkiHashLen])
 		if len(spki) == 0 {
-			fmt.Printf("%x\n", c[:spkiHashLen])
+			current_spki = c[:spkiHashLen]
 		}
 		c = c[spkiHashLen:]
 
@@ -330,7 +325,7 @@ func dump(filename string, certificateFilename string) bool {
 			}
 
 			if len(spki) == 0 {
-				fmt.Printf("  %x\n", c[:serialLen])
+				fmt.Printf("\\\\x%x\t\\\\x%x\n", current_spki, c[:serialLen])
 			} else if spkiMatches {
 				fmt.Printf("%x\n", c[:serialLen])
 			}
