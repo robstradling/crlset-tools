@@ -240,7 +240,7 @@ type crlSetHeader struct {
 }
 
 func dump(filename, certificateFilename string) bool {
-	header, c, ok := getHeader(filename)
+	_, c, ok := getHeader(filename)
 	if !ok {
 		return false
 	}
