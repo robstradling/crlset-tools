@@ -195,7 +195,7 @@ type crlSetHeader struct {
 }
 
 func dump(filename, certificateFilename string) bool {
-	header, c, ok := getHeader(filename)
+	_, c, ok := getHeader(filename)
 	if !ok {
 		return false
 	}
@@ -226,21 +226,17 @@ func dump(filename, certificateFilename string) bool {
 		spki = h.Sum(nil)
 	}
 
-	if len(spki) == 0 {
-		fmt.Printf("Sequence: %d\n", header.Sequence)
-		fmt.Printf("Parents: %d\n", header.NumParents)
-		fmt.Printf("\n")
-	}
-
 	for len(c) > 0 {
 		const spkiHashLen = 32
+		var current_spki []byte
+
 		if len(c) < spkiHashLen {
 			fmt.Fprintf(os.Stderr, "CRLSet truncated at SPKI hash\n")
 			return false
 		}
 		spkiMatches := bytes.Equal(spki, c[:spkiHashLen])
 		if len(spki) == 0 {
-			fmt.Printf("%x\n", c[:spkiHashLen])
+			current_spki = c[:spkiHashLen]
 		}
 		c = c[spkiHashLen:]
 
@@ -265,7 +261,7 @@ func dump(filename, certificateFilename string) bool {
 			}
 
 			if len(spki) == 0 {
-				fmt.Printf("  %x\n", c[:serialLen])
+				fmt.Printf("\\\\x%x\t\\\\x%x\t\n", current_spki, c[:serialLen])
 			} else if spkiMatches {
 				fmt.Printf("%x\n", c[:serialLen])
 			}
@@ -305,7 +301,7 @@ func dumpSPKIs(filename string) bool {
 				fmt.Fprintf(os.Stderr, "%s is not a valid SPKI\n", spki)
 				continue
 			}
-			fmt.Printf("%s:%s\n", fieldName, hex.EncodeToString(spkiBytes))
+			fmt.Printf("\t\t\\\\x%s\n", hex.EncodeToString(spkiBytes))
 		}
 	}
 
